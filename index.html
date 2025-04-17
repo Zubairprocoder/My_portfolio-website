@@ -240,6 +240,59 @@
             <p>Already have an account? <a href="#">Log in</a></p>
         </form>
     </div>
-    
+    <div id="game-container" style="position: relative; width: 400px; height: 600px; background-color: #333; margin: 20px auto; overflow: hidden;">
+        <div id="car" style="position: absolute; bottom: 20px; left: 180px; width: 40px; height: 80px; background-color: red; border-radius: 5px;"></div>
+    </div>
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const car = document.getElementById('car');
+        let carPosition = 180;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft' && carPosition > 0) {
+                carPosition -= 10;
+            } else if (event.key === 'ArrowRight' && carPosition < 360) {
+                carPosition += 10;
+            }
+            car.style.left = carPosition + 'px';
+        });
+
+        function createObstacle() {
+            const obstacle = document.createElement('div');
+            obstacle.style.position = 'absolute';
+            obstacle.style.top = '0px';
+            obstacle.style.left = Math.floor(Math.random() * 360) + 'px';
+            obstacle.style.width = '40px';
+            obstacle.style.height = '80px';
+            obstacle.style.backgroundColor = 'blue';
+            obstacle.style.borderRadius = '5px';
+            gameContainer.appendChild(obstacle);
+
+            let obstacleInterval = setInterval(() => {
+                const obstacleTop = parseInt(obstacle.style.top);
+                if (obstacleTop > 600) {
+                    clearInterval(obstacleInterval);
+                    gameContainer.removeChild(obstacle);
+                } else {
+                    obstacle.style.top = obstacleTop + 5 + 'px';
+
+                    const carRect = car.getBoundingClientRect();
+                    const obstacleRect = obstacle.getBoundingClientRect();
+                    if (
+                        carRect.left < obstacleRect.right &&
+                        carRect.right > obstacleRect.left &&
+                        carRect.top < obstacleRect.bottom &&
+                        carRect.bottom > obstacleRect.top
+                    ) {
+                        alert('Game Over!');
+                        clearInterval(obstacleInterval);
+                        location.reload();
+                    }
+                }
+            }, 30);
+        }
+
+        setInterval(createObstacle, 2000);
+    </script>
 </body>
 </html>
